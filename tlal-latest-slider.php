@@ -3,7 +3,7 @@
  * Plugin Name:       TLAL Latest Posts Slider
  * Plugin URI:        https://github.com/bmericc/tlal-latest-slider
  * Description:       Lightweight single-slide (fade) slider of the latest blog posts, in the style of the Travelify featured slider. Shows automatically below the header on the homepage (GeneratePress) and via the [tlal_slider] shortcode. No external libraries.
- * Version:           2.0.2
+ * Version:           2.0.3
  * Requires at least: 6.3
  * Requires PHP:      7.4
  * Author:            Bahri Meriç Canlı
@@ -15,7 +15,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-const TLAL_SLIDER_VERSION = '2.0.2';
+const TLAL_SLIDER_VERSION = '2.0.3';
 
 /**
  * Render the slider markup.
@@ -116,24 +116,47 @@ function tlal_slider_render( $atts = [] ) {
 
 add_shortcode( 'tlal_slider', 'tlal_slider_render' );
 
-add_action(
-	'wp_enqueue_scripts',
-	function () {
-		$base = plugin_dir_url( __FILE__ );
-		wp_register_style( 'tlal-slider', $base . 'slider.css', [], TLAL_SLIDER_VERSION );
-		wp_register_script( 'tlal-slider', $base . 'slider.js', [], TLAL_SLIDER_VERSION, [ 'in_footer' => true, 'strategy' => 'defer' ] );
+/**
+ * Whether the automatic homepage slider should be printed on this request.
+ * Only on page 1 of the front/home page, never on AMP requests.
+ */
+function tlal_slider_is_home_request() {
+	if ( ! ( is_front_page() || is_home() ) || is_paged() ) {
+		return false;
 	}
-);
+	if ( function_exists( 'amp_is_request' ) && amp_is_request() ) {
+		return false;
+	}
+	return true;
+}
+
+/**
+ * Register assets, and enqueue them up front (CSS in <head>) wherever the
+ * slider is known to appear. Enqueueing only from inside the render call
+ * relies on WordPress printing "late" styles in the footer, which other
+ * output-buffering plugins can drop for logged-out visitors.
+ */
+function tlal_slider_assets() {
+	$base = plugin_dir_url( __FILE__ );
+	wp_register_style( 'tlal-slider', $base . 'slider.css', [], TLAL_SLIDER_VERSION );
+	wp_register_script( 'tlal-slider', $base . 'slider.js', [], TLAL_SLIDER_VERSION, [ 'in_footer' => true, 'strategy' => 'defer' ] );
+
+	$post     = get_post();
+	$has_code = is_singular() && $post && has_shortcode( $post->post_content, 'tlal_slider' );
+	$on_home  = 'generatepress' === get_template() && has_action( 'generate_after_header', 'tlal_slider_home_output' ) && tlal_slider_is_home_request();
+
+	if ( $has_code || $on_home ) {
+		wp_enqueue_style( 'tlal-slider' );
+		wp_enqueue_script( 'tlal-slider' );
+	}
+}
+add_action( 'wp_enqueue_scripts', 'tlal_slider_assets' );
 
 /**
  * Auto-insert on the homepage right below <header> (GeneratePress hook).
- * Skipped on AMP requests and on paginated pages (/page/2/ ...).
  */
 function tlal_slider_home_output() {
-	if ( ! ( is_front_page() || is_home() ) || is_paged() ) {
-		return;
-	}
-	if ( function_exists( 'amp_is_request' ) && amp_is_request() ) {
+	if ( ! tlal_slider_is_home_request() ) {
 		return;
 	}
 	$atts = apply_filters( 'tlal_slider_home_atts', [ 'count' => 5, 'order' => 'asc' ] );

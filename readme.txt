@@ -4,7 +4,7 @@ Tags: slider, latest posts, carousel, featured image, generatepress
 Requires at least: 6.3
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.0.2
+Stable tag: 2.0.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,9 @@ Yes. All classes start with `tlal-` (for example `.tlal-slider`, `.tlal-slide__t
 
 == Changelog ==
 
+= 2.0.3 =
+* Fix: the slider's CSS and JS were missing for logged-out visitors, so every slide was shown unstyled one below the other. Assets are now enqueued in the normal way on the homepage and on posts or pages that contain the shortcode, instead of only from inside the render call.
+
 = 2.0.2 =
 * Added readme.txt and WordPress.org plugin header fields.
 * Text domain is now `tlal-latest-slider`, matching the plugin slug.
@@ -100,6 +103,9 @@ Yes. All classes start with `tlal-` (for example `.tlal-slider`, `.tlal-slide__t
 * First release: a three-card carousel of the latest posts.
 
 == Upgrade Notice ==
+
+= 2.0.3 =
+Fixes the slider showing unstyled for logged-out visitors. Clear your page cache after updating.
 
 = 2.0.2 =
 Readme and plugin header updates only. No change in behaviour.
