@@ -1,15 +1,21 @@
 <?php
 /**
- * Plugin Name: TLAL Latest Posts Slider
- * Description: Lightweight single-slide (fade) slider of the latest blog posts, in the style of the Travelify featured slider. Shows automatically below the header on the homepage (GeneratePress) and via the [tlal_slider] shortcode. No external libraries.
- * Version: 2.0.1
- * Author: Bahri Meriç Canlı
- * License: GPL-2.0-or-later
+ * Plugin Name:       TLAL Latest Posts Slider
+ * Plugin URI:        https://github.com/bmericc/tlal-latest-slider
+ * Description:       Lightweight single-slide (fade) slider of the latest blog posts, in the style of the Travelify featured slider. Shows automatically below the header on the homepage (GeneratePress) and via the [tlal_slider] shortcode. No external libraries.
+ * Version:           2.0.2
+ * Requires at least: 6.3
+ * Requires PHP:      7.4
+ * Author:            Bahri Meriç Canlı
+ * Author URI:        https://github.com/bmericc
+ * License:           GPL-2.0-or-later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain:       tlal-latest-slider
  */
 
 defined( 'ABSPATH' ) || exit;
 
-const TLAL_SLIDER_VERSION = '2.0.1';
+const TLAL_SLIDER_VERSION = '2.0.2';
 
 /**
  * Render the slider markup.
@@ -52,14 +58,14 @@ function tlal_slider_render( $atts = [] ) {
 		$q->posts = array_reverse( $q->posts );
 	}
 
-	wp_enqueue_style( 'tlal-slider' );
-	wp_enqueue_script( 'tlal-slider' );
+	wp_enqueue_style( 'tlal-latest-slider' );
+	wp_enqueue_script( 'tlal-latest-slider' );
 
 	$total = count( $q->posts );
 	$i     = 0;
 	ob_start();
 	?>
-	<section class="tlal-slider" aria-roledescription="carousel" aria-label="<?php esc_attr_e( 'Latest posts', 'tlal-slider' ); ?>" data-autoplay="<?php echo (int) $a['autoplay']; ?>">
+	<section class="tlal-slider" aria-roledescription="carousel" aria-label="<?php esc_attr_e( 'Latest posts', 'tlal-latest-slider' ); ?>" data-autoplay="<?php echo (int) $a['autoplay']; ?>">
 		<div class="tlal-slider__slides">
 			<?php
 			while ( $q->have_posts() ) :
@@ -95,11 +101,11 @@ function tlal_slider_render( $atts = [] ) {
 			?>
 		</div>
 		<?php if ( $total > 1 ) : ?>
-			<button type="button" class="tlal-slider__nav tlal-slider__nav--prev" aria-label="<?php esc_attr_e( 'Previous', 'tlal-slider' ); ?>">&#10094;</button>
-			<button type="button" class="tlal-slider__nav tlal-slider__nav--next" aria-label="<?php esc_attr_e( 'Next', 'tlal-slider' ); ?>">&#10095;</button>
+			<button type="button" class="tlal-slider__nav tlal-slider__nav--prev" aria-label="<?php esc_attr_e( 'Previous', 'tlal-latest-slider' ); ?>">&#10094;</button>
+			<button type="button" class="tlal-slider__nav tlal-slider__nav--next" aria-label="<?php esc_attr_e( 'Next', 'tlal-latest-slider' ); ?>">&#10095;</button>
 			<div class="tlal-slider__dots">
 				<?php for ( $d = 0; $d < $total; $d++ ) : ?>
-					<button type="button" class="tlal-slider__dot<?php echo 0 === $d ? ' is-active' : ''; ?>" aria-label="<?php echo esc_attr( sprintf( __( 'Go to slide %d', 'tlal-slider' ), $d + 1 ) ); ?>"<?php echo 0 === $d ? ' aria-current="true"' : ''; ?>></button>
+					<button type="button" class="tlal-slider__dot<?php echo 0 === $d ? ' is-active' : ''; ?>" aria-label="<?php echo esc_attr( sprintf( __( 'Go to slide %d', 'tlal-latest-slider' ), $d + 1 ) ); ?>"<?php echo 0 === $d ? ' aria-current="true"' : ''; ?>></button>
 				<?php endfor; ?>
 			</div>
 		<?php endif; ?>
